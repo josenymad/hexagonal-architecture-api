@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -12,17 +12,21 @@ type ResponseData struct {
 	Status string                 `json:"status"`
 }
 
-type SuccessController struct {
+type TestController struct {
 }
 
-func NewSuccessController() SuccessController {
+func NewTestController() TestController {
 
-	return SuccessController{}
+	return TestController{}
 }
 
 func getRequestData(c *gin.Context) ResponseData {
 	requestData := make(map[string]interface{})
-	c.BindJSON(&requestData)
+
+	if err := c.BindJSON(&requestData); err != nil {
+		log.Println("Error binding request data JSON", err)
+	}
+
 	queryParams := c.Request.URL.Query()
 
 	for key, values := range queryParams {
@@ -35,11 +39,11 @@ func getRequestData(c *gin.Context) ResponseData {
 	}
 }
 
-func (sc *SuccessController) SuccessHandler(c *gin.Context) {
+func (sc *TestController) TestHandler(c *gin.Context) {
 	responseData := getRequestData(c)
 	responseStatus, err := strconv.Atoi(responseData.Status)
 	if err != nil {
-		fmt.Println("Could not convert status from string to int", err)
+		log.Println("Error converting status from string to int", err)
 		return
 	}
 	c.JSON(responseStatus, responseData.Data)

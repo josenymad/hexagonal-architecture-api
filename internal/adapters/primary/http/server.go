@@ -20,8 +20,8 @@ func NewHttpServer(address, port string) HttpServer {
 }
 
 func (server *HttpServer) Run() {
-	successController := controllers.NewSuccessController()
+	testController := controllers.NewTestController()
 	router := gin.New()
-	router.POST("/success", successController.SuccessHandler)
+	router.POST("/test", testController.TestHandler)
 	router.Run(fmt.Sprintf("%s:%s", server.address, server.port))
 }
