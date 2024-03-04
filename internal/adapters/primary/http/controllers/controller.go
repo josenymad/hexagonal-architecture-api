@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ResponseData struct {
+type Response struct {
 	Data   map[string]interface{} `json:"data"`
 	Status string                 `json:"status"`
 }
@@ -20,7 +20,7 @@ func NewTestController() TestController {
 	return TestController{}
 }
 
-func getRequestData(c *gin.Context) ResponseData {
+func getRequestData(c *gin.Context) Response {
 	requestData := make(map[string]interface{})
 
 	if err := c.BindJSON(&requestData); err != nil {
@@ -41,18 +41,18 @@ func getRequestData(c *gin.Context) ResponseData {
 		status = "200"
 	}
 
-	return ResponseData{
+	return Response{
 		Data:   requestData,
 		Status: status,
 	}
 }
 
 func (sc *TestController) TestHandler(c *gin.Context) {
-	responseData := getRequestData(c)
-	responseStatus, err := strconv.Atoi(responseData.Status)
+	response := getRequestData(c)
+	responseStatus, err := strconv.Atoi(response.Status)
 	if err != nil {
 		log.Println("Error converting status from string to int", err)
 		return
 	}
-	c.JSON(responseStatus, responseData.Data)
+	c.JSON(responseStatus, response.Data)
 }
