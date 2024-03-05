@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/josenymad/hexagonal-go-api/internal/core/services"
 )
 
 type Response struct {
@@ -12,12 +13,15 @@ type Response struct {
 	Status string                 `json:"status"`
 }
 
-type TestController struct {
+type Controller struct {
+	service services.Service
 }
 
-func NewTestController() TestController {
+func NewController(service services.Service) Controller {
 
-	return TestController{}
+	return Controller{
+		service: service,
+	}
 }
 
 func getRequestData(c *gin.Context) Response {
@@ -47,7 +51,7 @@ func getRequestData(c *gin.Context) Response {
 	}
 }
 
-func (sc *TestController) TestHandler(c *gin.Context) {
+func (sc *Controller) TestHandler(c *gin.Context) {
 	response := getRequestData(c)
 	responseStatus, err := strconv.Atoi(response.Status)
 	if err != nil {

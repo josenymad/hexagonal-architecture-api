@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/josenymad/hexagonal-go-api/internal/adapters/primary/http/controllers"
+	"github.com/josenymad/hexagonal-go-api/internal/core/services"
 )
 
 type HttpServer struct {
@@ -19,8 +20,8 @@ func NewHttpServer(address, port string) HttpServer {
 	}
 }
 
-func (server *HttpServer) Run() {
-	testController := controllers.NewTestController()
+func (server *HttpServer) Run(service services.Service) {
+	testController := controllers.NewController(service)
 	router := gin.New()
 	router.POST("/test", testController.TestHandler)
 	router.Run(fmt.Sprintf("%s:%s", server.address, server.port))
