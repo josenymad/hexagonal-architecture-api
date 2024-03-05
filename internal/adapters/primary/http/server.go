@@ -21,8 +21,8 @@ func NewHttpServer(address, port string) HttpServer {
 }
 
 func (server *HttpServer) Run(service services.Service) {
-	testController := controllers.NewController(service)
+	controller := controllers.NewController(service)
 	router := gin.New()
-	router.POST("/test", testController.TestHandler)
+	router.POST("/test", controller.Handler)
 	router.Run(fmt.Sprintf("%s:%s", server.address, server.port))
 }

@@ -51,12 +51,15 @@ func getRequestData(c *gin.Context) Response {
 	}
 }
 
-func (sc *Controller) TestHandler(c *gin.Context) {
+func (controller *Controller) Handler(c *gin.Context) {
 	response := getRequestData(c)
 	responseStatus, err := strconv.Atoi(response.Status)
 	if err != nil {
 		log.Println("Error converting status from string to int", err)
 		return
 	}
+
+	controller.service.SendData(response)
+
 	c.JSON(responseStatus, response.Data)
 }
