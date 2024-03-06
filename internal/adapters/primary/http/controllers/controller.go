@@ -59,7 +59,7 @@ func (controller *Controller) Handler(c *gin.Context) {
 		return
 	}
 
-	controller.service.SendData(response)
+	controller.service.SendData(response.Data)
 
 	c.JSON(responseStatus, response.Data)
 }
