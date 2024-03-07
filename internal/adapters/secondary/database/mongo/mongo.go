@@ -37,16 +37,12 @@ func ConnectToMongoDB(db string) (*mongo.Client, error) {
 
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
+		log.Println("Error connecting to MongoDB client")
 		return &mongo.Client{}, err
 	}
 
-	// defer func() {
-	// 	if err = client.Disconnect(context.TODO()); err != nil {
-	// 		panic(err)
-	// 	}
-	// }()
-
 	if err := client.Database(db).RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Err(); err != nil {
+		log.Println("Error pinging MongoDB")
 		panic(err)
 	}
 
@@ -71,7 +67,7 @@ func (m *MongoDB) PostData(data interface{}) error {
 	mongo := m.client.Database(m.dbName).Collection(m.collection)
 	_, err := mongo.InsertOne(context.TODO(), data)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error writing to MongoDB", err)
 		return err
 	}
 	defer func() {
@@ -80,4 +76,26 @@ func (m *MongoDB) PostData(data interface{}) error {
 		}
 	}()
 	return nil
+}
+
+func (m *MongoDB) GetAllData() (interface{}, error) {
+	mongo := m.client.Database(m.dbName).Collection(m.collection)
+	cursor, err := mongo.Find(context.TODO(), bson.D{})
+	if err != nil {
+		log.Println("Error getting cursor containing all data from MongoDB", err)
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var records []interface{}
+	for cursor.Next(context.TODO()) {
+		var response bson.M
+		if err := cursor.Decode(&response); err != nil {
+			log.Println("Error decoding cursor when getting all data")
+			return nil, err
+		}
+		records = append(records, response)
+	}
+
+	return records, nil
 }

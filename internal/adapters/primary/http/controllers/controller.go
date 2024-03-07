@@ -51,7 +51,7 @@ func getRequestData(c *gin.Context) Response {
 	}
 }
 
-func (controller *Controller) Handler(c *gin.Context) {
+func (controller *Controller) PostHandler(c *gin.Context) {
 	response := getRequestData(c)
 	responseStatus, err := strconv.Atoi(response.Status)
 	if err != nil {
@@ -62,4 +62,14 @@ func (controller *Controller) Handler(c *gin.Context) {
 	controller.service.SendData(response.Data)
 
 	c.JSON(responseStatus, response.Data)
+}
+
+func (controller *Controller) GetAllHandler(c *gin.Context) {
+	response, err := controller.service.GetAllData()
+	if err != nil {
+		log.Println("Failed to get all data in controller")
+		return
+	}
+
+	c.JSON(200, response)
 }
