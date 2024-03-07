@@ -13,3 +13,5 @@ This project is an extension of a [smaller mock API](https://github.com/josenyma
 I have also added a second route, to read all of the records in the database.
 
 There isn't really any real world application for this program, I just wanted to build something to help me understand hexagonal architecture.
+
+Going forward, I'd like to improve the error handling.
