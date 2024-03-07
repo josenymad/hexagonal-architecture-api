@@ -13,7 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failed to connect to mongoDB", err)
 	}
-	service := services.NewService(&mongoDB)
+	service := services.NewService(mongoDB)
 	http := http.NewHttpServer("localhost", "8000")
 	http.Run(service)
 }

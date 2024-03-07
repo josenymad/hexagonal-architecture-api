@@ -19,7 +19,7 @@ type MongoDB struct {
 
 func GetConnectionString() string {
 	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
+		log.Fatal("No .env file found")
 	}
 
 	uri := os.Getenv("MONGODB_URI")
@@ -37,26 +37,26 @@ func ConnectToMongoDB(db string) (*mongo.Client, error) {
 
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
-		log.Println("Error connecting to MongoDB client")
-		return &mongo.Client{}, err
+		log.Println("Error connecting to MongoDB client", err)
+		return nil, err
 	}
 
 	if err := client.Database(db).RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Err(); err != nil {
-		log.Println("Error pinging MongoDB")
-		panic(err)
+		log.Println("Error pinging MongoDB", err)
+		return nil, err
 	}
 
 	return client, nil
 }
 
-func NewMongoDB(db, collection string) (MongoDB, error) {
+func NewMongoDB(db, collection string) (*MongoDB, error) {
 	mongo, err := ConnectToMongoDB(db)
 	if err != nil {
 		log.Println("Error connecting to MongoDB")
-		return MongoDB{}, err
+		return nil, err
 	}
 
-	return MongoDB{
+	return &MongoDB{
 		client:     mongo,
 		dbName:     db,
 		collection: collection,
@@ -70,11 +70,11 @@ func (m *MongoDB) PostData(data interface{}) error {
 		log.Println("Error writing to MongoDB", err)
 		return err
 	}
-	defer func() {
-		if err = m.client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
+	// defer func() {
+	// 	if err = m.client.Disconnect(context.TODO()); err != nil {
+	// 		log.Println("Error disconnecting from MongoDB", err)
+	// 	}
+	// }()
 	return nil
 }
 
